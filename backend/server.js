@@ -15,7 +15,7 @@ const { Pool } = require("pg");
 // Initialize Express app
 // ============================================
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // ============================================
 // Middleware
@@ -30,21 +30,28 @@ app.use(express.json());
 // ============================================
 // Database Connection
 // ============================================
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false,
-    },
-});
+const databaseUrl = process.env.DATABASE_URL;
+const pool = databaseUrl
+    ? new Pool({
+          connectionString: databaseUrl,
+          ssl: {
+              rejectUnauthorized: false,
+          },
+      })
+    : null;
 
-// Test the database connection on startup
-pool.query("SELECT NOW()")
-    .then((res) => {
-        console.log("Database connected successfully at:", res.rows[0].now);
-    })
-    .catch((err) => {
-        console.error("Database connection failed:", err.message);
-    });
+// Test the database connection on startup (only if configured)
+if (pool) {
+    pool.query("SELECT NOW()")
+        .then((res) => {
+            console.log("Database connected successfully at:", res.rows[0].now);
+        })
+        .catch((err) => {
+            console.error("Database connection failed:", err.message);
+        });
+} else {
+    console.warn("DATABASE_URL not set; /api/data will return mock payloads.");
+}
 
 // ============================================
 // Routes
@@ -55,13 +62,48 @@ app.get("/", (req, res) => {
     res.json({ message: "API is running" });
 });
 
-// GET /notes - Return all data (newest first)
+// API routes
+// ============================================
+const apiRouter = express.Router();
+
+apiRouter.get("/health", (req, res) => {
+    res.json({ message: "API is running", timestamp: Date.now() });
+});
+
+async function getData(req) {
+    // For scaffolding: return a deterministic placeholder payload when DB is not configured.
+    if (!pool) {
+        return [
+            {
+                id: "mock-1",
+                source: "mock",
+                createdAt: new Date().toISOString(),
+            },
+        ];
+    }
+
+    const result = await pool.query("SELECT * FROM data");
+    return result.rows;
+}
+
+// GET /api/data - Return all data (newest first)
+apiRouter.get("/data", async (req, res) => {
+    try {
+        const rows = await getData(req);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+});
+
+app.use("/api", apiRouter);
+
+// Backwards compatibility for any existing clients.
 app.get("/data", async (req, res) => {
     try {
-        const result = await pool.query(
-            "SELECT * FROM data"
-        );
-        res.json(result.rows);
+        const rows = await getData(req);
+        res.json(rows);
     } catch (err) {
         console.error("Error fetching data:", err.message);
         res.status(500).json({ error: "Failed to fetch data" });
