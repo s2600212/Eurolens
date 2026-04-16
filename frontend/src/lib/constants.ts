@@ -1,4 +1,4 @@
-export const API_BASE_URL = "/api";
+export const API_BASE_URL = import.meta.env.BACKEND_API_URL || "/api";
 
 export interface CountryInfo {
     code: string;
