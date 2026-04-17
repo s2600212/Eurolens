@@ -4,7 +4,7 @@ A web-based macroeconomic dashboard for the EU economic area — visualising ECB
 
 > **Live demo:** [Deployed on Vercel](https://eurolens-savo.vercel.app/) · Backend hosted on Render (may take a moment to boot after inactivity)
 
-> **Management README** A high level version of this README is also available as an HTML page [Deployed on GitHub-Pages](#). But this file remains the official and more technical documentation
+> **Management README:** A high level version of this README is also available as an HTML page [Deployed on GitHub-Pages](https://s2600212.github.io/Eurolens/). But this file remains the official and more technical documentation
 
 
 ---
