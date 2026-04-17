@@ -1,125 +1,184 @@
-# Project description
+# Eurolens
 
-Eurolens is a web-based application designed to provide users with insights and analysis on European market trends. It leverages modern web technologies and AI tools to deliver a seamless and interactive user experience.
+A web-based macroeconomic dashboard for the EU economic area — visualising ECB interest rates, HICP inflation, GDP growth, and unemployment across EU member states. Built with React and a Node.js proxy backend.
 
-## Problem definition
+> **Live demo:** [Deployed on Vercel](#) · Backend hosted on Render (may take a moment to boot after inactivity)
 
-Understanding and analyzing European market trends can be challenging due to the vast amount of data available. Eurolens aims to simplify this process by aggregating, analyzing, and presenting data in a user-friendly format, enabling users to make informed decisions.
+---
 
-The problem arose to us in our Economics class in Germany, when we needed to write papers for the module assessment. 
+## Problem
 
-# Link to deployed version
-The current deployed version can be found on Vercel [here](https://eurolens-savo.vercel.app/).
+Understanding European macroeconomic trends requires navigating multiple data sources with inconsistent formats. Eurolens aggregates data from Eurostat and the World Bank into a single, interactive interface with an AI assistant for contextual analysis. The project originated from an Economics module at a German university.
 
-The backend is hosted on Render and may take some time to boot up. Please be patient with it.
+---
 
-# Architecture Overview
+## Architecture
 
-The application follows a modular architecture with a clear separation of concerns. The frontend is built using React for dynamic user interfaces, while the backend is powered by Node.js and Express for handling API requests.
-
-Here is the folder structure:
-.
-├── .gitignore
-├── backend/
-│ ├── .env
-│ ├── package.json
-│ └── server.js
-└── frontend/
-├── .env
-├── index.html
-├── package.json
-├── vite.config.ts
-├── public/
-│ ├── favicon.svg
-│ └── icons.svg
-└── src/
-├── main.tsx
-├── index.css
-├── components/
-│ ├── charts/ # BaseAreaChart, BaseBarChart, BaseLineChart, CustomTooltip, SparkLine
-│ ├── dashboard/ # ComparisonPanel, ECBRatesPanel, GDPPanel, InflationPanel
-│ ├── layout/ # AppShell, Sidebar, TopBar
-│ └── ui/ # Badge, Button, ChatPanel, KPICard, Select, Skeleton, …
-├── hooks/ # useChat, useECBRates, useGDP, useInflation, useUnemployment, …
-├── lib/ # api.ts, constants.ts, formatters.ts
-├── pages/ # Compare, GDP, Inflation, InterestRates, Overview, Unemployment
-└── types/ # chart.ts, ecb.ts, worldbank.ts
-
-And here a mermaid diagramm:
-```mermaid
-flowchart TD
-    Browser["🌐 Browser\nUser Interface"]
-
-    subgraph Vercel["☁️ Frontend — Vercel"]
-        React["React + Vite SPA\nTypeScript · React Router"]
-        UI["Dashboard UI\nCharts · KPI Cards · Filters"]
-        Chat["Chat Panel\nuseChat hook"]
-        Hooks["Data Hooks\nuseECBRates · useGDP\nuseInflation · useUnemployment"]
-    end
-
-    subgraph Render["🖥️ Backend — Render"]
-        Express["Express Router\nserver.js"]
-        Proxy["Data Proxy\nFetch & Normalise"]
-        GeminiHandler["Gemini Handler\nStream completions"]
-    end
-
-    subgraph External["🌍 External Services"]
-        ECB["ECB API\nsdw-wsrest.ecb.europa.eu\nInterest Rates"]
-        WorldBank["World Bank API\napi.worldbank.org\nGDP · Inflation · Unemployment"]
-        Gemini["Google Gemini\ngenerativelanguage.googleapis.com\nLLM Chat"]
-    end
-
-    Browser -- "HTTPS" --> React
-    React --> UI
-    React --> Chat
-    React --> Hooks
-
-    Hooks -- "REST / JSON" --> Express
-    Chat -- "POST /chat" --> Express
-
-    Express --> Proxy
-    Express --> GeminiHandler
-
-    Proxy -- "HTTPS" --> ECB
-    Proxy -- "HTTPS" --> WorldBank
-    GeminiHandler -- "HTTPS" --> Gemini
+```
+Eurostat API (SDMX)  ──┐
+World Bank API       ──┼──▶  Express Proxy (Render)  ──▶  React SPA (Vercel)  ──▶  Browser
+LLM Provider         ──┘         backend/server.js           frontend/src
 ```
 
-# Technology choices and justification
+- The **React SPA** makes all requests to the Express proxy — no direct external calls from the browser
+- The **Express proxy** normalises Eurostat SDMX JSON-stat responses (custom flat-index/strides parser), fetches World Bank data, and routes AI chat to a configurable LLM provider
+- **TanStack Query v5** handles all client-side data fetching, caching, and background refetching
+- URL search params persist all filters (country selection, time range) so views are shareable
 
-- **React with Typescript**: Chosen for its component-based architecture and efficient rendering. Shadcn was used as the component library
-- **Node.js and Express**: Selected for their lightweight and scalable backend capabilities.
-- **Vite**: For easy development and deployment.
-- **AI Tools**: Integrated to provide advanced data analysis, insights and Chatbot capabilities. (Google Gemini)
+---
 
-# AI Usage disclosure
-AI Tools were used to generate and modify code. They were used in the ideation phase for different versions and than one of those versions was modified and adjusted.
+## Project Structure
 
-All architecture and feature choices were made by us. AI was only used as a coding agent, while we did the requirements engineering part.
+```
+.
+├── backend/
+│   ├── .env                  # PORT, LLM_PROVIDER, LLM_API_KEY, LLM_MODEL
+│   ├── package.json          # express, cors, dotenv, pg
+│   └── server.js             # All API routes + LLM abstraction layer
+└── frontend/
+    ├── .env                  # VITE_API_BASE_URL
+    ├── index.html
+    ├── vite.config.ts
+    └── src/
+        ├── main.tsx           # QueryClient · BrowserRouter · routes
+        ├── index.css          # Tailwind v4 + CSS custom properties (light/dark)
+        ├── pages/
+        │   ├── Overview.tsx      # KPI cards + combined charts
+        │   ├── InterestRates.tsx # ECB rate history + data table
+        │   ├── Inflation.tsx     # HICP line + latest bar chart
+        │   ├── GDP.tsx           # GDP growth bar/line charts
+        │   ├── Unemployment.tsx  # Unemployment line + latest bar chart
+        │   └── Compare.tsx       # Side-by-side 2-country comparison
+        ├── components/
+        │   ├── charts/           # BaseAreaChart · BaseBarChart · BaseLineChart · SparkLine · CustomTooltip
+        │   ├── dashboard/        # ECBRatesPanel · InflationPanel · GDPPanel · ComparisonPanel
+        │   ├── layout/           # AppShell · Sidebar · TopBar
+        │   └── ui/               # KPICard · ChatPanel · ChartWrapper · MultiSelect · Skeleton · …
+        ├── hooks/
+        │   ├── useECBRates.ts         # MRO + deposit rate — Eurostat irtstm
+        │   ├── useInflation.ts        # HICP — Eurostat prc_hicp_manr
+        │   ├── useGDP.ts              # GDP growth — World Bank NY.GDP.MKTP.KD.ZG
+        │   ├── useUnemployment.ts     # Eurostat une_rt_m
+        │   ├── useCountryComparison.ts
+        │   └── useChat.ts             # Multi-turn chat + POST /api/chat
+        ├── lib/
+        │   ├── api.ts
+        │   ├── constants.ts      # EU country list + flags
+        │   └── formatters.ts
+        └── types/
+            ├── ecb.ts
+            ├── worldbank.ts
+            └── chart.ts
+```
 
+---
 
-## Tools used
+## Pages
 
-- Claude/Anthropic Models via API
-- Gemini as ChatBot in the App
-- During ideation phase: Cursor, Figma Make, Base44
+| Page | Route | Description |
+|---|---|---|
+| Overview | `/` | KPI cards (MRO rate, deposit rate, EZ inflation, GDP, unemployment) + combined charts |
+| Interest Rates | `/rates` | MRO & deposit rate line chart + historical rate table. Filter: time range (1Y / 2Y / 5Y / All) |
+| Inflation | `/inflation` | Multi-country HICP line chart + latest inflation bar chart. Filters: up to 5 countries + time range |
+| GDP | `/gdp` | Annual GDP growth bar chart + 10-year sparklines per country. Filter: country select |
+| Unemployment | `/unemployment` | Multi-country unemployment line chart + latest rates bar chart. Filters: up to 5 countries + time range |
+| Compare | `/compare` | Side-by-side inflation + GDP charts and summary stats table for 2 countries. URL: `?a=DE&b=FR` |
 
-## What was generated
+---
 
-- Different code snippets
+## Data Sources
 
-## What was manually modified
+| Source | Dataset / Indicator | Used for |
+|---|---|---|
+| **Eurostat** (SDMX REST) | `irtstm` | ECB 3-month & day-to-day rates (MRO & deposit facility proxies) |
+| **Eurostat** (SDMX REST) | `prc_hicp_manr` | HICP inflation — annual rate of change |
+| **Eurostat** (SDMX REST) | `une_rt_m` | Unemployment — seasonally adjusted, % of active population |
+| **World Bank** (REST JSON) | `NY.GDP.MKTP.KD.ZG` | Annual GDP growth rate |
+| **LLM Provider** | OpenAI / Anthropic / Gemini | AI chat assistant (configurable via env) |
 
-- Customization of the AI-generated code to meet specific project requirements.
-- Manual styling and UI adjustments for a better user experience.
-- Requirements Engineering optimized prompting changing the AI-generated code
+**Countries covered:** Germany (DE), France (FR), Italy (IT), Spain (ES), Poland (PL), Netherlands (NL), Sweden (SE), Finland (FI), Austria (AT), Belgium (BE)
 
-# Reflection and further improvements
+---
 
-While the project successfully meets its objectives, there is room for improvement:
-- Optimize the application for better performance on small-screen devices.
-- Add more data sources to provide a comprehensive analysis.
-- Implement additional features based on user feedback.
-- Improve documentation for easier onboarding of new developers.
-- Advanced linking between pages
-- Single country overview dashboard
+## Tech Stack
+
+**Frontend:** React 19 · TypeScript 5.6 · Vite 6 · Tailwind CSS v4 · TanStack Query v5 · React Router v6 · Recharts 2 · date-fns 4 · lucide-react
+
+**Backend:** Node.js · Express 5 · cors · dotenv · pg (PostgreSQL client)
+
+**Tooling:** ESLint · TypeScript strict mode
+
+---
+
+## Setup
+
+### Backend
+
+```bash
+cd backend
+npm install
+# create .env (see below)
+node server.js
+```
+
+`backend/.env`:
+```
+PORT=3000
+LLM_PROVIDER=openai        # openai | anthropic | google
+LLM_API_KEY=your-key-here
+LLM_MODEL=gpt-4o-mini      # optional, has defaults per provider
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+# create .env (see below)
+npm run dev
+```
+
+`frontend/.env`:
+```
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+---
+
+## Deployment
+
+- **Frontend** → Vercel. Set `VITE_API_BASE_URL` to your Render backend URL in Vercel environment variables.
+- **Backend** → Render (Node.js web service). Set `LLM_PROVIDER`, `LLM_API_KEY`, and optionally `LLM_MODEL`. Free tier instances cold-start after inactivity.
+
+---
+
+## AI Chat
+
+The AI assistant (`POST /api/chat`) is scoped to EU economics and the Eurolens dashboard only. It will decline to answer unrelated questions. Features:
+
+- Multi-provider: swap between OpenAI, Anthropic, or Google Gemini with a single env variable
+- Rate limited: 10 requests per minute per IP (in-memory)
+- Context injection: the current dashboard page and live data summary are passed with each message
+- 20-message history window to control token usage
+
+---
+
+## AI Usage Disclosure
+
+AI tools were used as coding agents during development. Requirements engineering, architecture decisions, and feature choices were made by the team.
+
+**Tools used:** Claude (Anthropic) · Gemini (in-app chatbot) · Cursor · Figma Make · Base44
+
+**What was generated:** Code snippets, component scaffolding, initial implementations
+
+**What was manually modified:** UI styling and adjustments, requirements engineering, prompt optimisation, customisation to meet project requirements
+
+---
+
+## Further Improvements
+
+- Mobile optimisation for small-screen devices
+- Additional data sources for more comprehensive analysis
+- Single-country overview dashboard page
+- Advanced cross-page linking (e.g. click a country on Overview → goes to filtered Inflation page)
+- Improved onboarding documentation
