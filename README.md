@@ -15,11 +15,79 @@ The backend is hosted on Render and may take some time to boot up. Please be pat
 
 # Architecture Overview
 
-The application follows a modular architecture with a clear separation of concerns. The frontend is built using React for dynamic user interfaces, while the backend is powered by Node.js and Express for handling API requests. Data is stored in a MongoDB database, and AI models are integrated for data analysis.
+The application follows a modular architecture with a clear separation of concerns. The frontend is built using React for dynamic user interfaces, while the backend is powered by Node.js and Express for handling API requests.
+
+Here is the folder structure:
+.
+├── .gitignore
+├── backend/
+│ ├── .env
+│ ├── package.json
+│ └── server.js
+└── frontend/
+├── .env
+├── index.html
+├── package.json
+├── vite.config.ts
+├── public/
+│ ├── favicon.svg
+│ └── icons.svg
+└── src/
+├── main.tsx
+├── index.css
+├── components/
+│ ├── charts/ # BaseAreaChart, BaseBarChart, BaseLineChart, CustomTooltip, SparkLine
+│ ├── dashboard/ # ComparisonPanel, ECBRatesPanel, GDPPanel, InflationPanel
+│ ├── layout/ # AppShell, Sidebar, TopBar
+│ └── ui/ # Badge, Button, ChatPanel, KPICard, Select, Skeleton, …
+├── hooks/ # useChat, useECBRates, useGDP, useInflation, useUnemployment, …
+├── lib/ # api.ts, constants.ts, formatters.ts
+├── pages/ # Compare, GDP, Inflation, InterestRates, Overview, Unemployment
+└── types/ # chart.ts, ecb.ts, worldbank.ts
+
+And here a mermaid diagramm:
+```mermaid
+flowchart TD
+    Browser["🌐 Browser\nUser Interface"]
+
+    subgraph Vercel["☁️ Frontend — Vercel"]
+        React["React + Vite SPA\nTypeScript · React Router"]
+        UI["Dashboard UI\nCharts · KPI Cards · Filters"]
+        Chat["Chat Panel\nuseChat hook"]
+        Hooks["Data Hooks\nuseECBRates · useGDP\nuseInflation · useUnemployment"]
+    end
+
+    subgraph Render["🖥️ Backend — Render"]
+        Express["Express Router\nserver.js"]
+        Proxy["Data Proxy\nFetch & Normalise"]
+        GeminiHandler["Gemini Handler\nStream completions"]
+    end
+
+    subgraph External["🌍 External Services"]
+        ECB["ECB API\nsdw-wsrest.ecb.europa.eu\nInterest Rates"]
+        WorldBank["World Bank API\napi.worldbank.org\nGDP · Inflation · Unemployment"]
+        Gemini["Google Gemini\ngenerativelanguage.googleapis.com\nLLM Chat"]
+    end
+
+    Browser -- "HTTPS" --> React
+    React --> UI
+    React --> Chat
+    React --> Hooks
+
+    Hooks -- "REST / JSON" --> Express
+    Chat -- "POST /chat" --> Express
+
+    Express --> Proxy
+    Express --> GeminiHandler
+
+    Proxy -- "HTTPS" --> ECB
+    Proxy -- "HTTPS" --> WorldBank
+    GeminiHandler -- "HTTPS" --> Gemini
+```
 
 # Technology choices and justification
 
-- **React**: Chosen for its component-based architecture and efficient rendering. Shadcn was used as the component library
+- **React with Typescript**: Chosen for its component-based architecture and efficient rendering. Shadcn was used as the component library
 - **Node.js and Express**: Selected for their lightweight and scalable backend capabilities.
 - **Vite**: For easy development and deployment.
 - **AI Tools**: Integrated to provide advanced data analysis, insights and Chatbot capabilities. (Google Gemini)
