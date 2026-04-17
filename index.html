@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eurolens — Project Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{
+  --color-bg:#f8fafc;--color-surface:#ffffff;--color-surface-2:#f1f5f9;
+  --color-surface-offset:#e2e8f0;--color-border:#e2e8f0;--color-divider:#e2e8f0;
+  --color-text:#0f172a;--color-text-muted:#6b7280;--color-text-faint:#cbd5e1;
+  --color-primary:#0284c7;--color-primary-hover:#0369a1;--color-primary-highlight:#e0f2fe;
+  --color-success:#16a34a;--color-gold:#d97706;--color-orange:#ea580c;--color-purple:#7c3aed;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0/0.05);--shadow-md:0 4px 6px -1px rgb(0 0 0/0.07),0 2px 4px -2px rgb(0 0 0/0.05);
+  --radius-sm:6px;--radius-md:8px;--radius-lg:12px;
+  --font-body:'Inter',system-ui,sans-serif;--font-mono:'Geist Mono',monospace;
+  --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem);
+  --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem);
+  --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --space-1:0.25rem;--space-2:0.5rem;--space-3:0.75rem;--space-4:1rem;
+  --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;
+}
+[data-theme="dark"]{
+  --color-bg:#0a0f1a;--color-surface:#141b2d;--color-surface-2:#1e293b;
+  --color-surface-offset:#1e293b;--color-border:#1e293b;--color-divider:#1e2a3a;
+  --color-text:#f1f5f9;--color-text-muted:#9ca3af;--color-text-faint:#334155;
+  --color-primary:#38bdf8;--color-primary-hover:#0ea5e9;--color-primary-highlight:rgba(14,165,233,0.12);
+  --color-success:#4ade80;--color-gold:#fbbf24;--color-orange:#fb923c;--color-purple:#a78bfa;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0/0.3);--shadow-md:0 4px 6px -1px rgb(0 0 0/0.4),0 2px 4px -2px rgb(0 0 0/0.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;scroll-padding-top:52px}
+body{font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-bg);line-height:1.6;min-height:100dvh}
+a{color:var(--color-primary);text-decoration:none}a:hover{text-decoration:underline}
+code{font-family:var(--font-mono);font-size:0.82em;background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;color:var(--color-primary)}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:216px 1fr;min-height:100dvh}
+@media(max-width:768px){.layout{grid-template-columns:1fr}}
+
+/* SIDEBAR */
+.sidebar{position:sticky;top:0;height:100dvh;overflow-y:auto;background:var(--color-surface);border-right:1px solid var(--color-border);padding:var(--space-5) 0;display:flex;flex-direction:column}
+@media(max-width:768px){.sidebar{display:none}}
+.sidebar-logo{padding:0 var(--space-5) var(--space-5);border-bottom:1px solid var(--color-divider);margin-bottom:var(--space-3);display:flex;align-items:center;gap:var(--space-3)}
+.logo-icon{width:30px;height:30px;flex-shrink:0}
+.logo-name{font-size:var(--text-sm);font-weight:700;letter-spacing:-0.02em;color:var(--color-text)}
+.logo-sub{font-size:0.65rem;color:var(--color-text-muted);margin-top:1px}
+.nav-section{padding:0 var(--space-2);margin-top:var(--space-1)}
+.nav-label{font-size:0.62rem;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:var(--color-text-faint);padding:var(--space-3) var(--space-3) var(--space-1)}
+.nav-item{display:flex;align-items:center;gap:var(--space-2);padding:6px var(--space-3);border-radius:var(--radius-md);font-size:var(--text-xs);color:var(--color-text-muted);transition:background 140ms,color 140ms;text-decoration:none;line-height:1.4}
+.nav-item:hover{background:var(--color-surface-offset);color:var(--color-text);text-decoration:none}
+.nav-item.active{background:var(--color-primary-highlight);color:var(--color-primary)}
+.nav-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--color-bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--color-border);padding:0 var(--space-8);height:52px;display:flex;align-items:center;justify-content:space-between}
+.topbar-left{display:flex;align-items:center;gap:var(--space-3)}
+.breadcrumb{font-size:var(--text-xs);color:var(--color-text-muted)}
+.breadcrumb span{color:var(--color-text-faint);margin:0 var(--space-1)}
+.theme-btn{width:30px;height:30px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);border:1px solid var(--color-border);transition:background 140ms,color 140ms}
+.theme-btn:hover{background:var(--color-surface-offset);color:var(--color-text)}
+
+/* CONTENT */
+.main{overflow-x:hidden}
+.page-content{max-width:840px;margin:0 auto;padding:var(--space-10) var(--space-8)}
+@media(max-width:600px){.page-content{padding:var(--space-6) var(--space-4)}}
+
+/* HERO */
+.hero{padding:var(--space-10) 0 var(--space-8);border-bottom:1px solid var(--color-divider);margin-bottom:var(--space-10)}
+.hero-eyebrow{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap}
+.live-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:9999px;border:1px solid color-mix(in srgb,var(--color-success) 40%,transparent);background:color-mix(in srgb,var(--color-success) 10%,transparent);font-size:0.68rem;font-weight:600;color:var(--color-success);text-transform:uppercase;letter-spacing:0.06em}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--color-success);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero-chip{font-size:0.68rem;padding:3px 10px;border-radius:9999px;border:1px solid var(--color-border);color:var(--color-text-muted);background:var(--color-surface)}
+.hero h1{font-size:var(--text-xl);font-weight:800;letter-spacing:-0.04em;line-height:1.1;color:var(--color-text);margin-bottom:var(--space-4)}
+.hero h1 em{font-style:normal;color:var(--color-primary)}
+.hero-desc{font-size:var(--text-sm);color:var(--color-text-muted);max-width:58ch;line-height:1.75;margin-bottom:var(--space-6)}
+.hero-links{display:flex;gap:var(--space-3);flex-wrap:wrap}
+.hero-link{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--radius-md);font-size:var(--text-xs);font-weight:500;transition:background 140ms,color 140ms;text-decoration:none}
+.hero-link.primary{background:var(--color-primary);color:#fff}
+.hero-link.primary:hover{background:var(--color-primary-hover);text-decoration:none}
+.hero-link.ghost{border:1px solid var(--color-border);color:var(--color-text-muted);background:var(--color-surface)}
+.hero-link.ghost:hover{background:var(--color-surface-offset);color:var(--color-text);text-decoration:none}
+
+/* SECTIONS */
+.section{margin-bottom:var(--space-12)}
+.section-header{margin-bottom:var(--space-5)}
+.section-header h2{font-size:var(--text-base);font-weight:700;letter-spacing:-0.02em;color:var(--color-text);margin-bottom:3px}
+.section-header p{font-size:var(--text-xs);color:var(--color-text-muted);max-width:62ch}
+
+/* FLOW */
+.flow{display:flex;align-items:stretch;gap:0;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden}
+.flow-node{flex:1;padding:var(--space-4);border-right:1px solid var(--color-border);display:flex;flex-direction:column;gap:4px}
+.flow-node:last-child{border-right:none}
+.flow-node-label{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-faint)}
+.flow-node-name{font-size:var(--text-xs);font-weight:600;color:var(--color-text)}
+.flow-node-sub{font-size:0.68rem;color:var(--color-text-muted)}
+.flow-node.hl .flow-node-name{color:var(--color-primary)}
+.flow-node.hl{background:var(--color-primary-highlight)}
+@media(max-width:600px){.flow{flex-direction:column}.flow-node{border-right:none;border-bottom:1px solid var(--color-border)}.flow-node:last-child{border-bottom:none}}
+
+/* ARCH GRID */
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)}
+@media(max-width:600px){.arch-grid{grid-template-columns:1fr}}
+.arch-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5)}
+.arch-card-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4)}
+.arch-icon{width:30px;height:30px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.arch-card-title{font-size:var(--text-xs);font-weight:700;color:var(--color-text)}
+.arch-card-sub{font-size:0.68rem;color:var(--color-text-muted)}
+.arch-list{list-style:none;display:flex;flex-direction:column;gap:var(--space-2)}
+.arch-list li{font-size:var(--text-xs);color:var(--color-text-muted);display:flex;align-items:flex-start;gap:var(--space-2)}
+.arch-list li::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--color-text-faint);flex-shrink:0;margin-top:6px}
+
+/* TREE */
+.tree{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden}
+.tree-header{padding:10px var(--space-4);border-bottom:1px solid var(--color-divider);display:flex;align-items:center;gap:var(--space-2)}
+.tree-dots{display:flex;gap:5px}
+.tree-dot{width:10px;height:10px;border-radius:50%}
+.tree-title{font-size:var(--text-xs);color:var(--color-text-faint);margin-left:var(--space-2);font-family:var(--font-mono)}
+.tree-body{padding:var(--space-4);font-family:var(--font-mono);font-size:0.71rem;line-height:1.95;overflow-x:auto}
+.tree-body .dir{color:var(--color-primary);font-weight:500}
+.tree-body .cm{color:var(--color-text-faint);font-style:italic}
+.i1{padding-left:1.2em}.i2{padding-left:2.4em}.i3{padding-left:3.6em}.i4{padding-left:4.8em}
+
+/* PAGES TABLE */
+.table-wrap{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden}
+.pages-table{width:100%;border-collapse:collapse}
+.pages-table th{font-size:0.65rem;font-weight:600;color:var(--color-text-faint);text-align:left;padding:10px var(--space-3);border-bottom:1px solid var(--color-divider);letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap}
+.pages-table td{font-size:var(--text-xs);padding:10px var(--space-3);border-bottom:1px solid var(--color-divider);color:var(--color-text-muted);vertical-align:top}
+.pages-table tr:last-child td{border-bottom:none}
+.page-mono{font-family:var(--font-mono);font-size:0.72rem}
+.page-route{color:var(--color-primary)}
+.color-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;flex-shrink:0}
+
+/* SOURCES */
+.source-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:var(--space-3)}
+.source-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4)}
+.source-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-2)}
+.source-name{font-size:var(--text-xs);font-weight:700;color:var(--color-text)}
+.sbadge{font-size:0.62rem;padding:2px 8px;border-radius:9999px;font-weight:600}
+.sb-eurostat{background:color-mix(in srgb,var(--color-primary) 12%,transparent);color:var(--color-primary);border:1px solid color-mix(in srgb,var(--color-primary) 25%,transparent)}
+.sb-worldbank{background:color-mix(in srgb,var(--color-success) 12%,transparent);color:var(--color-success);border:1px solid color-mix(in srgb,var(--color-success) 25%,transparent)}
+.sb-llm{background:color-mix(in srgb,var(--color-purple) 12%,transparent);color:var(--color-purple);border:1px solid color-mix(in srgb,var(--color-purple) 25%,transparent)}
+.source-desc{font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:var(--space-3)}
+.chip{font-size:0.62rem;padding:2px 7px;border-radius:9999px;background:var(--color-surface-offset);color:var(--color-text-muted);border:1px solid var(--color-border)}
+
+/* STACK */
+.stack-group{margin-bottom:var(--space-5)}
+.stack-label{font-size:0.62rem;font-weight:600;color:var(--color-text-faint);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-2)}
+.stack-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.stack-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--text-xs);color:var(--color-text-muted)}
+.stack-pill strong{color:var(--color-text);font-weight:600}
+
+/* DEPLOY */
+.deploy-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)}
+@media(max-width:500px){.deploy-grid{grid-template-columns:1fr}}
+.deploy-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4)}
+.deploy-platform{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-faint);margin-bottom:3px}
+.deploy-name{font-size:var(--text-xs);font-weight:700;color:var(--color-text);margin-bottom:4px}
+.deploy-desc{font-size:var(--text-xs);color:var(--color-text-muted)}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <svg class="logo-icon" viewBox="0 0 30 30" fill="none" aria-label="Eurolens logo">
+      <rect width="30" height="30" rx="7" fill="var(--color-primary)" opacity="0.15"/>
+      <path d="M7 15 Q7 8.5 15 8.5 Q20 8.5 22 12.5" stroke="var(--color-primary)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+      <path d="M5.5 13h9.5M5.5 17h9.5" stroke="var(--color-primary)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M7 15 Q7 21.5 15 21.5 Q20 21.5 22 17.5" stroke="var(--color-primary)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div>
+      <div class="logo-name">Eurolens</div>
+      <div class="logo-sub">Project Docs</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a href="#overview" class="nav-item active"><span class="nav-dot" style="background:var(--color-primary)"></span>Introduction</a>
+      <a href="#architecture" class="nav-item"><span class="nav-dot" style="background:#60a5fa"></span>Architecture</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Structure</div>
+      <a href="#file-tree" class="nav-item"><span class="nav-dot" style="background:var(--color-text-faint)"></span>File Tree</a>
+      <a href="#pages" class="nav-item"><span class="nav-dot" style="background:var(--color-gold)"></span>Pages & Routes</a>
+      <a href="#components" class="nav-item"><span class="nav-dot" style="background:var(--color-orange)"></span>Components</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Data & Deploy</div>
+      <a href="#data-sources" class="nav-item"><span class="nav-dot" style="background:var(--color-success)"></span>Data Sources</a>
+      <a href="#tech-stack" class="nav-item"><span class="nav-dot" style="background:var(--color-purple)"></span>Tech Stack</a>
+      <a href="#deployment" class="nav-item"><span class="nav-dot" style="background:var(--color-text-faint)"></span>Deployment</a>
+    </div>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="breadcrumb">eurolens <span>›</span> README.md</span>
+    </div>
+    <button class="theme-btn" data-theme-toggle aria-label="Toggle theme">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+
+  <div class="page-content">
+
+    <!-- HERO -->
+    <section class="hero" id="overview">
+      <div class="hero-eyebrow">
+        <span class="live-badge"><span class="live-dot"></span>Live on Vercel</span>
+        <span class="hero-chip">React 19 · TypeScript · Tailwind v4</span>
+        <span class="hero-chip">Node.js · Express 5</span>
+      </div>
+      <h1>Eurolens <em>Dashboard</em></h1>
+      <p class="hero-desc">A web-based macroeconomic dashboard for the EU economic area — aggregating ECB interest rates, HICP inflation, GDP growth, and unemployment data across EU member states. Built to make European economic data accessible, visual, and interactive, with an AI assistant for contextual analysis.</p>
+      <div class="hero-links">
+        <a href="https://eurolens-savo.vercel.app/" target="_blank" rel="noopener noreferrer" class="hero-link primary">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Live Demo (Vercel)
+        </a>
+        <a href="#architecture" class="hero-link ghost">Architecture →</a>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section class="section" id="architecture">
+      <div class="section-header">
+        <h2>Architecture</h2>
+        <p>The frontend SPA talks exclusively to the Express proxy. The proxy normalises Eurostat SDMX and World Bank REST responses and routes AI chat to a configurable LLM provider.</p>
+      </div>
+      <div class="flow">
+        <div class="flow-node">
+          <div class="flow-node-label">External</div>
+          <div class="flow-node-name">Eurostat API</div>
+          <div class="flow-node-sub">SDMX REST · rates, inflation, unemployment</div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-node-label">External</div>
+          <div class="flow-node-name">World Bank API</div>
+          <div class="flow-node-sub">GDP growth · NY.GDP.MKTP.KD.ZG</div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-node-label">External</div>
+          <div class="flow-node-name">LLM Provider</div>
+          <div class="flow-node-sub">OpenAI / Anthropic / Gemini</div>
+        </div>
+        <div class="flow-node hl">
+          <div class="flow-node-label">Render</div>
+          <div class="flow-node-name">Express Proxy</div>
+          <div class="flow-node-sub">server.js · normalise + route</div>
+        </div>
+        <div class="flow-node hl">
+          <div class="flow-node-label">Vercel</div>
+          <div class="flow-node-name">React SPA</div>
+          <div class="flow-node-sub">TanStack Query · Recharts · Tailwind</div>
+        </div>
+      </div>
+
+      <div style="margin-top:var(--space-4)">
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon" style="background:color-mix(in srgb,#60a5fa 14%,transparent)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+            <div><div class="arch-card-title">Frontend</div><div class="arch-card-sub">React 19 · TypeScript · Vite 6</div></div>
+          </div>
+          <ul class="arch-list">
+            <li>TanStack Query v5 for data fetching &amp; caching</li>
+            <li>Recharts for all chart types (line, area, bar)</li>
+            <li>Tailwind CSS v4 with CSS custom properties</li>
+            <li>React Router v6 — hash-free client routing</li>
+            <li>URL search params persist filters across pages</li>
+            <li>AI chat panel with multi-turn history</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon" style="background:color-mix(in srgb,var(--color-success) 14%,transparent)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><path d="M5 12H19M12 5l7 7-7 7"/></svg>
+            </div>
+            <div><div class="arch-card-title">Backend</div><div class="arch-card-sub">Node.js · Express 5 · Render</div></div>
+          </div>
+          <ul class="arch-list">
+            <li>Single <code>server.js</code> — all routes in one file</li>
+            <li>Fetches Eurostat SDMX JSON-stat format</li>
+            <li>Custom SDMX parser (flat index, strides)</li>
+            <li>Multi-provider LLM abstraction (OpenAI / Anthropic / Gemini)</li>
+            <li>In-memory rate limiting on <code>POST /api/chat</code></li>
+            <li><code>pg</code> included as dependency (PostgreSQL ready)</li>
+          </ul>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- FILE TREE -->
+    <section class="section" id="file-tree">
+      <div class="section-header">
+        <h2>File Tree</h2>
+        <p><code>node_modules/</code>, lock files, and tsconfig files omitted for brevity.</p>
+      </div>
+      <div class="tree">
+        <div class="tree-header">
+          <div class="tree-dots">
+            <div class="tree-dot" style="background:#ff5f57"></div>
+            <div class="tree-dot" style="background:#ffbd2e"></div>
+            <div class="tree-dot" style="background:#28c840"></div>
+          </div>
+          <span class="tree-title">eurolens/</span>
+        </div>
+        <div class="tree-body">
+<div><span class="dir">.</span></div>
+<div class="i1"><span class="dir">backend/</span></div>
+<div class="i2">.env <span class="cm"># PORT, LLM_PROVIDER, LLM_API_KEY, LLM_MODEL</span></div>
+<div class="i2">package.json <span class="cm"># express, cors, dotenv, pg</span></div>
+<div class="i2">server.js <span class="cm"># All API routes + LLM abstraction layer</span></div>
+<div class="i1"><span class="dir">frontend/</span></div>
+<div class="i2">.env <span class="cm"># VITE_API_BASE_URL</span></div>
+<div class="i2">index.html</div>
+<div class="i2">vite.config.ts <span class="cm"># @vitejs/plugin-react</span></div>
+<div class="i2">eslint.config.js</div>
+<div class="i2"><span class="dir">public/</span> <span class="cm"># favicon.svg · icons.svg · vite.svg</span></div>
+<div class="i2"><span class="dir">src/</span></div>
+<div class="i3">main.tsx <span class="cm"># QueryClient · BrowserRouter · routes</span></div>
+<div class="i3">index.css <span class="cm"># Tailwind v4 + CSS custom properties (light/dark)</span></div>
+<div class="i3"><span class="dir">pages/</span></div>
+<div class="i4">Overview.tsx <span class="cm"># KPI cards + combined charts</span></div>
+<div class="i4">InterestRates.tsx <span class="cm"># ECB rate history + data table</span></div>
+<div class="i4">Inflation.tsx <span class="cm"># HICP line chart + latest bar chart</span></div>
+<div class="i4">GDP.tsx <span class="cm"># GDP growth bar/line charts</span></div>
+<div class="i4">Unemployment.tsx <span class="cm"># Unemployment line + latest bar chart</span></div>
+<div class="i4">Compare.tsx <span class="cm"># Side-by-side 2-country comparison</span></div>
+<div class="i3"><span class="dir">components/</span></div>
+<div class="i4"><span class="dir">charts/</span> <span class="cm"># BaseAreaChart · BaseBarChart · BaseLineChart · SparkLine · CustomTooltip</span></div>
+<div class="i4"><span class="dir">dashboard/</span> <span class="cm"># ECBRatesPanel · InflationPanel · GDPPanel · ComparisonPanel</span></div>
+<div class="i4"><span class="dir">layout/</span> <span class="cm"># AppShell · Sidebar · TopBar</span></div>
+<div class="i4"><span class="dir">ui/</span> <span class="cm"># KPICard · ChatPanel · ChartWrapper · MultiSelect · Select · TimeRangeSelector · Skeleton · EmptyState · ErrorCard · Badge · Button</span></div>
+<div class="i3"><span class="dir">hooks/</span></div>
+<div class="i4">useECBRates.ts <span class="cm"># MRO + deposit rate from Eurostat irtstm</span></div>
+<div class="i4">useInflation.ts <span class="cm"># HICP from Eurostat prc_hicp_manr</span></div>
+<div class="i4">useGDP.ts <span class="cm"># GDP growth from World Bank</span></div>
+<div class="i4">useUnemployment.ts <span class="cm"># From Eurostat une_rt_m</span></div>
+<div class="i4">useCountryComparison.ts <span class="cm"># Parallel fetch for compare page</span></div>
+<div class="i4">useChat.ts <span class="cm"># Chat history + POST /api/chat</span></div>
+<div class="i3"><span class="dir">lib/</span> <span class="cm"># api.ts · constants.ts (EU countries) · formatters.ts</span></div>
+<div class="i3"><span class="dir">types/</span> <span class="cm"># ecb.ts · worldbank.ts · chart.ts</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGES -->
+    <section class="section" id="pages">
+      <div class="section-header">
+        <h2>Pages &amp; Routes</h2>
+        <p>Six route-level views. Filters are persisted in URL search params so links are shareable.</p>
+      </div>
+      <div class="table-wrap">
+      <table class="pages-table">
+        <thead>
+          <tr><th>Page</th><th>Route</th><th>Hook(s)</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="page-mono"><span class="color-dot" style="background:var(--color-primary)"></span>Overview</td>
+            <td class="page-mono page-route">/</td>
+            <td class="page-mono" style="color:var(--color-text-muted)">all hooks</td>
+            <td>KPI cards (MRO rate, deposit rate, EZ inflation, GDP, unemployment) + combined MRO vs inflation chart + country inflation bar chart</td>
+          </tr>
+          <tr>
+            <td class="page-mono"><span class="color-dot" style="background:#60a5fa"></span>InterestRates</td>
+            <td class="page-mono page-route">/rates</td>
+            <td class="page-mono" style="color:var(--color-text-muted)">useECBRates</td>
+            <td>MRO &amp; deposit facility rate line chart with time range selector (1Y / 2Y / 5Y / All) + historical rate data table</td>
+          </tr>
+          <tr>
+            <td class="page-mono"><span class="color-dot" style="background:var(--color-orange)"></span>Inflation</td>
+            <td class="page-mono page-route">/inflation</td>
+            <td class="page-mono" style="color:var(--color-text-muted)">useInflation</td>
+            <td>Multi-country HICP line chart (up to 5 countries) + latest inflation horizontal bar chart for all 10 EU countries. Filters: country multi-select + time range</td>
+          </tr>
+          <tr>
+            <td class="page-mono"><span class="color-dot" style="background:var(--color-success)"></span>GDP</td>
+            <td class="page-mono page-route">/gdp</td>
+            <td class="page-mono" style="color:var(--color-text-muted)">useGDP</td>
+            <td>GDP growth bar chart per country + sparklines showing 10-year trend. Country selector filter</td>
+          </tr>
+          <tr>
+            <td class="page-mono"><span class="color-dot" style="background:var(--color-gold)"></span>Unemployment</td>
+            <td class="page-mono page-route">/unemployment</td>
+            <td class="page-mono" style="color:var(--color-text-muted)">useUnemployment</td>
+            <td>Multi-country unemployment line chart (seasonally adjusted) + latest rates horizontal bar chart. Filters: country multi-select + time range</td>
+          </tr>
+          <tr>
+            <td class="page-mono"><span class="color-dot" style="background:var(--color-purple)"></span>Compare</td>
+            <td class="page-mono page-route">/compare</td>
+            <td class="page-mono" style="color:var(--color-text-muted)">useCountryComparison</td>
+            <td>Side-by-side 2-country view: inflation line chart, GDP bar chart (last 5 years), summary stats table with latest values + 5Y averages. URL params: <code>?a=DE&amp;b=FR</code></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <!-- COMPONENTS -->
+    <section class="section" id="components">
+      <div class="section-header">
+        <h2>Components</h2>
+        <p>Four layers from generic primitives up to page-level panels.</p>
+      </div>
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon" style="background:color-mix(in srgb,var(--color-primary) 14%,transparent)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div><div class="arch-card-title">charts/</div><div class="arch-card-sub">Thin Recharts wrappers</div></div>
+          </div>
+          <ul class="arch-list">
+            <li><code>BaseAreaChart</code> — filled time-series</li>
+            <li><code>BaseBarChart</code> — grouped / stacked bars</li>
+            <li><code>BaseLineChart</code> — multi-series lines</li>
+            <li><code>SparkLine</code> — inline KPI mini-trend</li>
+            <li><code>CustomTooltip</code> — shared tooltip style</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon" style="background:color-mix(in srgb,var(--color-gold) 14%,transparent)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </div>
+            <div><div class="arch-card-title">dashboard/</div><div class="arch-card-sub">Topic panels used by pages</div></div>
+          </div>
+          <ul class="arch-list">
+            <li><code>ECBRatesPanel</code></li>
+            <li><code>InflationPanel</code></li>
+            <li><code>GDPPanel</code></li>
+            <li><code>ComparisonPanel</code></li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon" style="background:color-mix(in srgb,#60a5fa 14%,transparent)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+            <div><div class="arch-card-title">layout/</div><div class="arch-card-sub">App shell &amp; navigation</div></div>
+          </div>
+          <ul class="arch-list">
+            <li><code>AppShell</code> — root layout + chat context</li>
+            <li><code>Sidebar</code> — primary navigation</li>
+            <li><code>TopBar</code> — header actions</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon" style="background:color-mix(in srgb,var(--color-orange) 14%,transparent)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-orange)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            </div>
+            <div><div class="arch-card-title">ui/</div><div class="arch-card-sub">Primitives</div></div>
+          </div>
+          <ul class="arch-list">
+            <li><code>KPICard</code> — metric tile + sparkline</li>
+            <li><code>ChatPanel + ChatMarkdown</code> — AI assistant UI</li>
+            <li><code>ChartWrapper</code> — loading / error / empty shell</li>
+            <li><code>MultiSelect, Select, TimeRangeSelector</code></li>
+            <li><code>Skeleton, EmptyState, ErrorCard, Badge, Button</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- DATA SOURCES -->
+    <section class="section" id="data-sources">
+      <div class="section-header">
+        <h2>Data Sources</h2>
+        <p>All requests are proxied through the Express backend. No external API calls are made from the browser.</p>
+      </div>
+      <div class="source-grid">
+        <div class="source-card">
+          <div class="source-top">
+            <span class="source-name">Eurostat</span>
+            <span class="sbadge sb-eurostat">SDMX REST</span>
+          </div>
+          <p class="source-desc">Official EU statistics office. SDMX JSON-stat format parsed server-side with a custom flat-index stride algorithm.</p>
+          <div class="chips">
+            <span class="chip">irtstm — rates</span>
+            <span class="chip">prc_hicp_manr — HICP</span>
+            <span class="chip">une_rt_m — unemployment</span>
+          </div>
+        </div>
+        <div class="source-card">
+          <div class="source-top">
+            <span class="source-name">World Bank</span>
+            <span class="sbadge sb-worldbank">REST JSON</span>
+          </div>
+          <p class="source-desc">Open development indicators API. Used for annual GDP growth rates for all 10 covered EU countries.</p>
+          <div class="chips">
+            <span class="chip">NY.GDP.MKTP.KD.ZG</span>
+            <span class="chip">mrv=15 · per_page=500</span>
+          </div>
+        </div>
+        <div class="source-card">
+          <div class="source-top">
+            <span class="source-name">AI Chat</span>
+            <span class="sbadge sb-llm">Multi-provider</span>
+          </div>
+          <p class="source-desc">Pluggable LLM backend. Supports OpenAI, Anthropic, and Google Gemini via env config. Includes system guardrails limiting scope to EU economics.</p>
+          <div class="chips">
+            <span class="chip">Rate limited (10 req/min)</span>
+            <span class="chip">20-message history</span>
+            <span class="chip">Dashboard context injection</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:var(--space-4);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4)">
+        <div style="font-size:var(--text-xs);font-weight:700;color:var(--color-text);margin-bottom:var(--space-2)">Countries covered (10)</div>
+        <div class="chips">
+          <span class="chip">🇩🇪 DE Germany</span><span class="chip">🇫🇷 FR France</span><span class="chip">🇮🇹 IT Italy</span>
+          <span class="chip">🇪🇸 ES Spain</span><span class="chip">🇵🇱 PL Poland</span><span class="chip">🇳🇱 NL Netherlands</span>
+          <span class="chip">🇸🇪 SE Sweden</span><span class="chip">🇫🇮 FI Finland</span><span class="chip">🇦🇹 AT Austria</span>
+          <span class="chip">🇧🇪 BE Belgium</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TECH STACK -->
+    <section class="section" id="tech-stack">
+      <div class="section-header">
+        <h2>Tech Stack</h2>
+      </div>
+      <div class="stack-group">
+        <div class="stack-label">Frontend</div>
+        <div class="stack-row">
+          <div class="stack-pill"><strong>React 19</strong>&nbsp;UI framework</div>
+          <div class="stack-pill"><strong>TypeScript 5.6</strong>&nbsp;type safety</div>
+          <div class="stack-pill"><strong>Vite 6</strong>&nbsp;build &amp; dev</div>
+          <div class="stack-pill"><strong>Tailwind CSS v4</strong>&nbsp;styling</div>
+          <div class="stack-pill"><strong>TanStack Query v5</strong>&nbsp;data fetching</div>
+          <div class="stack-pill"><strong>React Router v6</strong>&nbsp;routing</div>
+          <div class="stack-pill"><strong>Recharts 2</strong>&nbsp;visualisation</div>
+          <div class="stack-pill"><strong>date-fns 4</strong>&nbsp;date utils</div>
+          <div class="stack-pill"><strong>lucide-react</strong>&nbsp;icons</div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-label">Backend</div>
+        <div class="stack-row">
+          <div class="stack-pill"><strong>Node.js</strong>&nbsp;runtime</div>
+          <div class="stack-pill"><strong>Express 5</strong>&nbsp;HTTP server</div>
+          <div class="stack-pill"><strong>cors</strong>&nbsp;CORS middleware</div>
+          <div class="stack-pill"><strong>dotenv</strong>&nbsp;env config</div>
+          <div class="stack-pill"><strong>pg</strong>&nbsp;PostgreSQL client</div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-label">Tooling</div>
+        <div class="stack-row">
+          <div class="stack-pill"><strong>ESLint</strong>&nbsp;linting</div>
+          <div class="stack-pill"><strong>TypeScript</strong>&nbsp;strict tsconfig (app + node)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEPLOYMENT -->
+    <section class="section" id="deployment">
+      <div class="section-header">
+        <h2>Deployment</h2>
+        <p>Frontend and backend are deployed separately. The backend on Render may cold-start after inactivity.</p>
+      </div>
+      <div class="deploy-grid">
+        <div class="deploy-card">
+          <div class="deploy-platform">Frontend</div>
+          <div class="deploy-name">Vercel</div>
+          <div class="deploy-desc">Static SPA deployment. Set <code>VITE_API_BASE_URL</code> to your Render backend URL in Vercel environment variables.</div>
+        </div>
+        <div class="deploy-card">
+          <div class="deploy-platform">Backend</div>
+          <div class="deploy-name">Render</div>
+          <div class="deploy-desc">Node.js web service. Requires <code>LLM_PROVIDER</code>, <code>LLM_API_KEY</code>, and optionally <code>LLM_MODEL</code> set as environment variables. Free tier cold-starts apply.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:var(--space-4);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5)">
+        <div style="font-size:var(--text-xs);font-weight:700;color:var(--color-text);margin-bottom:var(--space-3)">Environment variables</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)">
+          <div>
+            <div style="font-size:0.65rem;font-weight:600;color:var(--color-text-faint);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--space-2)">backend/.env</div>
+            <div style="font-family:var(--font-mono);font-size:0.7rem;line-height:2;color:var(--color-text-muted)">
+              PORT=3000<br>
+              LLM_PROVIDER=<span style="color:var(--color-text-faint)"># openai | anthropic | google</span><br>
+              LLM_API_KEY=<br>
+              LLM_MODEL=<span style="color:var(--color-text-faint)"># optional</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:0.65rem;font-weight:600;color:var(--color-text-faint);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--space-2)">frontend/.env</div>
+            <div style="font-family:var(--font-mono);font-size:0.7rem;line-height:2;color:var(--color-text-muted)">
+              VITE_API_BASE_URL=https://your-backend.onrender.com
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+  const btn=document.querySelector('[data-theme-toggle]'),root=document.documentElement;
+  let t=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  root.setAttribute('data-theme',t);
+  function icon(){if(!btn)return;btn.innerHTML=t==='dark'?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'}
+  icon();
+  if(btn)btn.addEventListener('click',()=>{t=t==='dark'?'light':'dark';root.setAttribute('data-theme',t);icon()});
+  const secs=document.querySelectorAll('section[id]'),navs=document.querySelectorAll('.nav-item');
+  const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){navs.forEach(n=>n.classList.remove('active'));const m=document.querySelector('.nav-item[href="#'+x.target.id+'"]');if(m)m.classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});
+  secs.forEach(s=>obs.observe(s));
+})();
+</script>
+</body>
+</html>
