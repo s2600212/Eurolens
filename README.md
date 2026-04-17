@@ -8,6 +8,11 @@ Understanding and analyzing European market trends can be challenging due to the
 
 The problem arose to us in our Economics class in Germany, when we needed to write papers for the module assessment. 
 
+# Link to deployed version
+The current deployed version can be found on Vercel [here](https://eurolens-savo.vercel.app/).
+
+The backend is hosted on Render and may take some time to boot up. Please be patient with it.
+
 # Architecture Overview
 
 The application follows a modular architecture with a clear separation of concerns. The frontend is built using React for dynamic user interfaces, while the backend is powered by Node.js and Express for handling API requests. Data is stored in a MongoDB database, and AI models are integrated for data analysis.
