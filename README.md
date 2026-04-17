@@ -2,7 +2,7 @@
 
 A web-based macroeconomic dashboard for the EU economic area — visualising ECB interest rates, HICP inflation, GDP growth, and unemployment across EU member states. Built with React and a Node.js proxy backend.
 
-> **Live demo:** [Deployed on Vercel](#) · Backend hosted on Render (may take a moment to boot after inactivity)
+> **Live demo:** [Deployed on Vercel](https://eurolens-savo.vercel.app/) · Backend hosted on Render (may take a moment to boot after inactivity)
 
 ---
 
